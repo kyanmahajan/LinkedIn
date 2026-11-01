@@ -4,9 +4,11 @@ model User {
   id        Int      @id @default(autoincrement())
   email     String   @unique
   number    Int
+  password String
   username  String?
-  name      String?
   posts     Post[]?
+  r_token  String?
+  // reactions Post[]
   createdAt TimestamptzString @default(now())
   updatedAt temporal.updatedAtString()
 }
@@ -17,6 +19,37 @@ model Post {
   content   String?
   author    User     @relation(fields: [authorId], references: [id])
   authorId  Int
+  
+
   createdAt TimestamptzString @default(now())
   updatedAt temporal.updatedAtString()
+}
+
+model reaction{
+   user_id   Int
+   post_id   Int 
+   user User  @relation(fields: [user_id], references: [id])
+   post Post   @relation(fields: [post_id], references: [id])
+   reaction Int
+
+  @@id([user_id, post_id])
+
+}
+
+
+
+model comments{
+ id  Int   @id @default(autoincrement())
+user_id Int 
+parent_id Int
+parent_type parent
+message String
+  
+
+}
+
+enum parent {
+  comment
+  post 
+
 }

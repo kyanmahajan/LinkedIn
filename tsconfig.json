@@ -10,7 +10,7 @@
     "strict": true,
     "skipLibCheck": true,
     "esModuleInterop": true,
-    "outDir": "dist"
+    "outDir": "dist" 
   },
   "include": [
     "**/*.ts"

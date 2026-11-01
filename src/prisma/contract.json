@@ -11,11 +11,34 @@
     "User": {
       "model": "User",
       "namespace": "public"
+    },
+    "comments": {
+      "model": "comments",
+      "namespace": "public"
+    },
+    "reaction": {
+      "model": "reaction",
+      "namespace": "public"
     }
   },
   "domain": {
     "namespaces": {
       "public": {
+        "enum": {
+          "parent": {
+            "codecId": "pg/text@1",
+            "members": [
+              {
+                "name": "comment",
+                "value": "comment"
+              },
+              {
+                "name": "post",
+                "value": "post"
+              }
+            ]
+          }
+        },
         "models": {
           "Post": {
             "fields": {
@@ -128,17 +151,24 @@
                   "kind": "scalar"
                 }
               },
-              "name": {
-                "nullable": true,
+              "number": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/int4@1",
+                  "kind": "scalar"
+                }
+              },
+              "password": {
+                "nullable": false,
                 "type": {
                   "codecId": "pg/text@1",
                   "kind": "scalar"
                 }
               },
-              "number": {
-                "nullable": false,
+              "r_token": {
+                "nullable": true,
                 "type": {
-                  "codecId": "pg/int4@1",
+                  "codecId": "pg/text@1",
                   "kind": "scalar"
                 }
               },
@@ -185,11 +215,14 @@
                 "id": {
                   "column": "id"
                 },
-                "name": {
-                  "column": "name"
-                },
                 "number": {
                   "column": "number"
+                },
+                "password": {
+                  "column": "password"
+                },
+                "r_token": {
+                  "column": "r_token"
                 },
                 "updatedAt": {
                   "column": "updatedAt"
@@ -200,6 +233,147 @@
               },
               "namespaceId": "public",
               "table": "User"
+            }
+          },
+          "comments": {
+            "fields": {
+              "id": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/int4@1",
+                  "kind": "scalar"
+                }
+              },
+              "message": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "parent_id": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/int4@1",
+                  "kind": "scalar"
+                }
+              },
+              "parent_type": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                },
+                "valueSet": {
+                  "entityKind": "enum",
+                  "entityName": "parent",
+                  "namespaceId": "public",
+                  "plane": "domain"
+                }
+              },
+              "user_id": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/int4@1",
+                  "kind": "scalar"
+                }
+              }
+            },
+            "relations": {},
+            "storage": {
+              "fields": {
+                "id": {
+                  "column": "id"
+                },
+                "message": {
+                  "column": "message"
+                },
+                "parent_id": {
+                  "column": "parent_id"
+                },
+                "parent_type": {
+                  "column": "parent_type"
+                },
+                "user_id": {
+                  "column": "user_id"
+                }
+              },
+              "namespaceId": "public",
+              "table": "comments"
+            }
+          },
+          "reaction": {
+            "fields": {
+              "post_id": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/int4@1",
+                  "kind": "scalar"
+                }
+              },
+              "reaction": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/int4@1",
+                  "kind": "scalar"
+                }
+              },
+              "user_id": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/int4@1",
+                  "kind": "scalar"
+                }
+              }
+            },
+            "relations": {
+              "post": {
+                "cardinality": "N:1",
+                "nullable": false,
+                "on": {
+                  "localFields": [
+                    "post_id"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "Post",
+                  "namespace": "public"
+                }
+              },
+              "user": {
+                "cardinality": "N:1",
+                "nullable": false,
+                "on": {
+                  "localFields": [
+                    "user_id"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "User",
+                  "namespace": "public"
+                }
+              }
+            },
+            "storage": {
+              "fields": {
+                "post_id": {
+                  "column": "post_id"
+                },
+                "reaction": {
+                  "column": "reaction"
+                },
+                "user_id": {
+                  "column": "user_id"
+                }
+              },
+              "namespaceId": "public",
+              "table": "reaction"
             }
           }
         }
@@ -315,15 +489,20 @@
                   },
                   "nullable": false
                 },
-                "name": {
-                  "codecId": "pg/text@1",
-                  "dataType": "pg/text",
-                  "nullable": true
-                },
                 "number": {
                   "codecId": "pg/int4@1",
                   "dataType": "pg/int4",
                   "nullable": false
+                },
+                "password": {
+                  "codecId": "pg/text@1",
+                  "dataType": "pg/text",
+                  "nullable": false
+                },
+                "r_token": {
+                  "codecId": "pg/text@1",
+                  "dataType": "pg/text",
+                  "nullable": true
                 },
                 "updatedAt": {
                   "codecId": "pg/timestamptz-string@1",
@@ -350,6 +529,153 @@
                   ]
                 }
               ]
+            },
+            "comments": {
+              "checks": [
+                {
+                  "expression": "\"parent_type\" IN ('comment', 'post')",
+                  "name": "comments_parent_type_check_a4b3fb0c",
+                  "prefix": "comments_parent_type_check"
+                }
+              ],
+              "columns": {
+                "id": {
+                  "codecId": "pg/int4@1",
+                  "dataType": "pg/int4",
+                  "default": {
+                    "expression": "autoincrement()",
+                    "kind": "function"
+                  },
+                  "nullable": false
+                },
+                "message": {
+                  "codecId": "pg/text@1",
+                  "dataType": "pg/text",
+                  "nullable": false
+                },
+                "parent_id": {
+                  "codecId": "pg/int4@1",
+                  "dataType": "pg/int4",
+                  "nullable": false
+                },
+                "parent_type": {
+                  "codecId": "pg/text@1",
+                  "dataType": "pg/text",
+                  "nullable": false,
+                  "valueSet": {
+                    "entityKind": "valueSet",
+                    "entityName": "parent",
+                    "namespaceId": "public",
+                    "plane": "storage"
+                  }
+                },
+                "user_id": {
+                  "codecId": "pg/int4@1",
+                  "dataType": "pg/int4",
+                  "nullable": false
+                }
+              },
+              "foreignKeys": [],
+              "indexes": [],
+              "primaryKey": {
+                "columns": [
+                  "id"
+                ]
+              },
+              "uniques": []
+            },
+            "reaction": {
+              "columns": {
+                "post_id": {
+                  "codecId": "pg/int4@1",
+                  "dataType": "pg/int4",
+                  "nullable": false
+                },
+                "reaction": {
+                  "codecId": "pg/int4@1",
+                  "dataType": "pg/int4",
+                  "nullable": false
+                },
+                "user_id": {
+                  "codecId": "pg/int4@1",
+                  "dataType": "pg/int4",
+                  "nullable": false
+                }
+              },
+              "foreignKeys": [
+                {
+                  "index": {
+                    "name": "reaction_user_id_idx_6c952402"
+                  },
+                  "source": {
+                    "columns": [
+                      "user_id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "reaction"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "User"
+                  }
+                },
+                {
+                  "index": {
+                    "name": "reaction_post_id_idx_865a6df2"
+                  },
+                  "source": {
+                    "columns": [
+                      "post_id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "reaction"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "Post"
+                  }
+                }
+              ],
+              "indexes": [
+                {
+                  "columns": [
+                    "post_id"
+                  ],
+                  "name": "reaction_post_id_idx_865a6df2",
+                  "prefix": "reaction_post_id_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
+                    "user_id"
+                  ],
+                  "name": "reaction_user_id_idx_6c952402",
+                  "prefix": "reaction_user_id_idx",
+                  "unique": false
+                }
+              ],
+              "primaryKey": {
+                "columns": [
+                  "user_id",
+                  "post_id"
+                ]
+              },
+              "uniques": []
+            }
+          },
+          "valueSet": {
+            "parent": {
+              "kind": "valueSet",
+              "values": [
+                "comment",
+                "post"
+              ]
             }
           }
         },
@@ -357,7 +683,7 @@
         "kind": "postgres-schema"
       }
     },
-    "storageHash": "cd9161b95cddf0b05a15a0f31e4817723629f5dc15620f045842833bf548f309"
+    "storageHash": "d6883023c8ede344b9c84398c7d29ad2a155c35bc4fc900ada1941cc4db16da5"
   },
   "execution": {
     "executionHash": "3730158042e7c88d23f35529e89ad90532db0cd5c528c13e701f93cb45aa8a9c",
